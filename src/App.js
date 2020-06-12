@@ -3,34 +3,56 @@ import "./App.css";
 import Main from "./Main";
 import Converted from "./Converted";
 import { Route, Switch, useHistory } from "react-router-dom";
+import { convertDate } from "./tools/convertDate";
+import localForage from "localforage";
+
+const apiKey = "apiKey=321de7bcdde76fe02cf6";
 
 function App() {
   const history = useHistory();
   const [countryList, setCountryList] = useState([]);
-  const [conversion, setConversion] = useState({});
   const [conversionsList, setConversionsList] = useState([]);
-  const [hasError, setErrors] = useState(false);
 
   async function fetchData() {
-    const res = await fetch(
-      "https://free.currconv.com/api/v7/currencies?&apiKey=321de7bcdde76fe02cf6"
+    const response = await fetch(
+      "https://free.currconv.com/api/v7/currencies?&" + apiKey
     );
-    res
-      .json()
-      //  .then(console.log(res))
-      .then((res) =>
-        setCountryList(Object.values(res.results).map((x) => x.id))
-      )
-      .catch((err) => setErrors(err));
+    if (response.status >= 200 && response.status <= 299) {
+      response
+        .json()
+        .then((response) =>
+          setCountryList(Object.values(response.results).map((x) => x.id))
+        );
+    } else {
+      alert(
+        "Nie udało się wykonać żądanej operacji, ponieważ nie znaleziono zasobu powiązanego z żądaniem"
+      );
+    }
   }
 
   useEffect(() => {
     fetchData();
+
+    localForage
+      .getItem("savedConversions")
+      .then((value) => {
+        if (value !== null) console.log(value);
+        //       setConversionsList(value);
+      })
+      .catch(() => {
+        alert("Błąd odczytu histori");
+      });
   }, []);
 
   useEffect(() => {
-    if (conversionsList.length !== 0) history.push("/converted");
+    if (conversionsList.length !== 0 && window.location.hash !== "#/converted")
+      history.push("/converted");
   }, [conversionsList, history]);
+
+  function handleCleanHistory() {
+    setConversionsList([]);
+    localForage.setItem("savedConversions", []);
+  }
 
   const handleSubmit = async (values) => {
     const apiCall =
@@ -38,40 +60,46 @@ function App() {
       values.exchangingFromCurrency +
       "_" +
       values.exchangingToCurrency +
-      "&compact=ultra&apiKey=321de7bcdde76fe02cf6";
-    console.log("handleSubmit -> apiCall", apiCall);
-    const res2 = await fetch(apiCall);
-    res2
-      .json()
-      .then((res2) => {
-        const exchangeRate = Object.values(res2)[0];
-        const calculatedAmount = values.amountToChange * exchangeRate;
-        const allData = { exchangeRate, calculatedAmount, ...values };
-        setConversionsList(conversionsList.concat(allData));
-        console.log("tu jest ok?");
-        setConversion(allData)
-          .then(console.log("tu jest zle", conversion))
-          .then(history.push("/converted"));
-      })
-
-      .catch((err) => setErrors(err));
+      "&compact=ultra&" +
+      apiKey;
+    const response = await fetch(apiCall);
+    if (response.status === 200 || response.status === 304) {
+      response.json().then((res) => {
+        const exchangeRate =
+          res[
+            values.exchangingFromCurrency + "_" + values.exchangingToCurrency
+          ];
+        const calculatedAmount = (values.amountToChange * exchangeRate).toFixed(
+          2
+        );
+        const conversionDate = convertDate(new Date());
+        const newConversionsList = conversionsList.concat({
+          conversionDate,
+          calculatedAmount,
+          ...values,
+        });
+        localForage.setItem("savedConversions", newConversionsList);
+        setConversionsList(newConversionsList);
+      });
+    } else {
+      alert(
+        "Nie udało się wykonać żądanej operacji, ponieważ nie znaleziono zasobu powiązanego z żądaniem"
+      );
+    }
   };
-  console.log("App -> conversion", conversionsList);
+
   return (
     <div className="App">
       Konwerter walut
+      <Main listOfCurrencies={countryList.sort()} onSubmit={handleSubmit} />
       <Switch>
         <Route
           path="/converted"
           exact
-          render={(props) => <Converted myConversions={conversionsList} />}
-        />{" "}
-        <Route
-          path="/"
           render={(props) => (
-            <Main
-              listOfCurrencies={countryList.sort()}
-              onSubmit={handleSubmit}
+            <Converted
+              myConversions={conversionsList}
+              cleanHistory={handleCleanHistory}
             />
           )}
         />

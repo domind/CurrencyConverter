@@ -1,5 +1,6 @@
 import React from "react";
 import { Form, Field } from "react-final-form";
+import "./Main.css";
 
 function Main(props) {
   return (
@@ -8,9 +9,9 @@ function Main(props) {
       validate={(values) => {
         const errors = {};
         if (!values.amountToChange) {
-          errors.amountToChange = "Required";
+          errors.amountToChange = "Wpisz wartość";
         } else if (isNaN(values.amountToChange)) {
-          errors.amountToChange = "Must be a number";
+          errors.amountToChange = "Nieprawidłowa wartość";
         }
         return errors;
       }}
@@ -21,11 +22,10 @@ function Main(props) {
               <div>
                 <label>Kwota do zamiany</label>
                 <input {...input} type="text" placeholder="Wpisz kwotę" />
-                <span>{meta.error}</span>
+                <span className="error">{meta.error}</span>
               </div>
             )}
           </Field>
-
           <div>
             <label>Waluta bazowa</label>
             <Field
@@ -33,9 +33,9 @@ function Main(props) {
               component="select"
               initialValue="PLN"
             >
-              {props.listOfCurrencies.map((x) => (
-                <option key={x} value={x}>
-                  {x}
+              {props.listOfCurrencies.map((currencies) => (
+                <option key={currencies} value={currencies}>
+                  {currencies}
                 </option>
               ))}
             </Field>
@@ -47,14 +47,13 @@ function Main(props) {
               component="select"
               initialValue="USD"
             >
-              {props.listOfCurrencies.map((x) => (
-                <option key={x} value={x}>
-                  {x}
+              {props.listOfCurrencies.map((currencies) => (
+                <option key={currencies} value={currencies}>
+                  {currencies}
                 </option>
               ))}
             </Field>
           </div>
-
           <button type="submit">Konwertuj</button>
         </form>
       )}

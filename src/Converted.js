@@ -3,46 +3,71 @@ import { useHistory } from "react-router-dom";
 function Converted(props) {
   console.log("Converted -> props", props);
   const history = useHistory();
-  if (props.myConversions.length === 0) {
-    history.push("/");
-    return <div></div>;
-  }
-  console.log(
-    "Converted -> props.myConversions.length",
-    props.myConversions.length
-  );
-  const previousConversions = props.myConversions.map((conversion, index) => (
+  const myConversions = props.myConversions;
+  console.log("Converted -> myConversions", myConversions);
+  const numberOfConversions = myConversions.length;
+  console.log("Converted -> numberOfConversions", numberOfConversions);
+
+  const previousConversions = myConversions.map((conversion, index) => (
     <tr key={index}>
-      <td>{conversion.amountToChange}</td>
-      <td>{conversion.exchangingFromCurrency}</td>
-      <td>{conversion.calculatedAmount}</td>
-      <td>{conversion.exchangingToCurrency}</td>
+      <td>{conversion.conversionDate}</td>
+      <td>
+        {conversion.amountToChange + " " + conversion.exchangingFromCurrency}
+      </td>
+      <td>
+        {conversion.calculatedAmount + " " + conversion.exchangingToCurrency}
+      </td>
     </tr>
   ));
 
   return (
     <div>
+      {numberOfConversions !== 0 ? (
+        <div>
+          wynik{" "}
+          {myConversions[numberOfConversions - 1].calculatedAmount +
+            " " +
+            myConversions[numberOfConversions - 1].exchangingToCurrency}
+        </div>
+      ) : (
+        ""
+      )}
+
       <h1>History</h1>
       <table>
-        <tr>
-          <th>Przed wymianą</th>
-          <th>Waluta</th>
-          <th>Po wymianie</th>
-          <th>Waluta</th>
-        </tr>
-        <tbody>{previousConversions}</tbody>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Przed konwersją</th>
+
+            <th>Po konwersji</th>
+          </tr>
+        </thead>
+        <tbody>
+          {props.myConversions.length !== 0 ? (
+            previousConversions
+          ) : (
+            <tr>
+              <td colSpan="3">Brak historii konwersji walut</td>
+            </tr>
+          )}
+        </tbody>
       </table>
 
-      <div>Wymiana{props.myConversions[0].amountToChange}</div>
-      <div>{props.myConversions[0].exchangingFromCurrency}</div>
-      <div>Po wymianie {props.myConversions[0].calculatedAmount}</div>
-      <div>{props.myConversions[0].exchangingToCurrency}</div>
       <button
         onClick={() => {
           history.push("/");
         }}
       >
         Back
+      </button>
+
+      <button
+        onClick={() => {
+          props.cleanHistory();
+        }}
+      >
+        Wyczyść historię
       </button>
     </div>
   );
