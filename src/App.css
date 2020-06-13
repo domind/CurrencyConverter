@@ -1,8 +1,14 @@
 .App {
   text-align: center;
+  color: #2f72e2;
 }
 table,
 th,
 td {
   border: solid;
+}
+.mainTab {
+  border: 1px solid;
+  height: 80vh;
+  box-shadow: 5px 5px 50px;
 }

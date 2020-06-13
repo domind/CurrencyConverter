@@ -1,0 +1,33 @@
+.history {
+  background-color: #2f72e2;
+  /* #2f72e2; */
+  color: white;
+}
+.table {
+  text-align: right;
+  color: white !important;
+}
+.tablePlaceholder {
+  height: 70%;
+  overflow-y: scroll;
+}
+.react-bootstrap-table {
+  overflow-x: auto !important;
+}
+.historyTitle {
+  font-size: 2.5rem;
+}
+
+.close {
+  color: white !important;
+}
+.dateColumn {
+  text-align: center;
+}
+.history {
+  background-color: #2f72e2;
+  color: white;
+  border: 1px solid;
+  height: 80vh;
+  box-shadow: 5px 5px 50px #2f72e2;
+}
