@@ -41,9 +41,9 @@ function MainForm(props) {
     };
     handleCurrencyChange();
   }, [currencyFrom, currencyTo]);
+
   const handleSubmit = (values) => {
     const transaction = { ...values, calculatedAmount: value };
-
     props.onSubmit(transaction);
   };
   return (
@@ -75,6 +75,7 @@ function MainForm(props) {
                         <Field
                           name="exchangingFromCurrency"
                           component="select"
+                          value={currencyFrom}
                           initialValue={currencyFrom}
                         >
                           {props.listOfCurrencies.map((currencies) => (
@@ -110,11 +111,11 @@ function MainForm(props) {
                           type="text"
                           placeholder="Wynik"
                           value={value}
-                          initialValue={value}
                         />
                         <Field
                           name="exchangingToCurrency"
                           component="select"
+                          value={currencyTo}
                           initialValue={currencyTo}
                         >
                           {props.listOfCurrencies.map((currencies) => (

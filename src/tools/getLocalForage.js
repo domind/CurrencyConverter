@@ -6,6 +6,7 @@ export function getLocalForage() {
       .getItem("savedConversions")
       .then((value) => {
         if (value !== null) resolve(value);
+        else resolve([]);
       })
       .catch(() => {
         reject("Błąd odczytu histori");
