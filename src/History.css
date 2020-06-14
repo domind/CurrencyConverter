@@ -30,4 +30,8 @@
   border: 1px solid;
   height: 80vh;
   box-shadow: 5px 5px 50px #2f72e2;
+  border-radius: 5px;
+}
+.cleanHistory {
+  color: #2f72e2 !important;
 }

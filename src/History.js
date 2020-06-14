@@ -63,7 +63,8 @@ function History(props) {
         </Table>
       </Col>
       <Button
-        className="align-self-end"
+        variant="light"
+        className="align-self-end cleanHistory"
         onClick={() => {
           cleanHistory();
         }}
